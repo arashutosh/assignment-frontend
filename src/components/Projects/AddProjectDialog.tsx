@@ -186,7 +186,9 @@ export function AddProjectDialog({ open, onOpenChange }: AddProjectDialogProps) 
                 min="1"
                 max="50"
                 {...register('requiredTeamSize', {
-                  ...commonValidationRules.teamSize,
+                  required: 'Team size is required',
+                  min: { value: 1, message: 'Team size must be at least 1' },
+                  max: { value: 50, message: 'Team size cannot exceed 50' },
                   valueAsNumber: true
                 })}
                 className={errors.requiredTeamSize ? 'border-red-500 focus:border-red-500' : ''}

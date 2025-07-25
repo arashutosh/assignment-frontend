@@ -97,14 +97,13 @@ export const commonValidationRules: ValidationRules = {
         }
     },
     endDate: {
-        custom: (value: string, formData: any) => {
+        custom: (value: string) => {
             if (!value) return undefined;
-
-            const startDate = new Date(formData.startDate);
-            const endDate = new Date(value);
-
-            if (endDate <= startDate) {
-                return 'End date must be after start date';
+            // Note: Cross-field validation should be handled at the form level
+            // This is just a basic date format validation
+            const date = new Date(value);
+            if (isNaN(date.getTime())) {
+                return 'Invalid date format';
             }
             return undefined;
         }
@@ -115,8 +114,7 @@ export const commonValidationRules: ValidationRules = {
 export function validateField(
     value: any,
     rules: ValidationRule,
-    fieldName: string = 'Field',
-    formData?: any
+    fieldName: string = 'Field'
 ): string | undefined {
     // Check required
     if (rules.required) {
@@ -171,7 +169,7 @@ export function validateField(
 
     // Check custom validation
     if (rules.custom) {
-        return rules.custom(value, formData);
+        return rules.custom(value);
     }
 
     return undefined;
@@ -187,7 +185,7 @@ export function validateForm(
     Object.keys(validationRules).forEach(fieldName => {
         const rules = validationRules[fieldName];
         const value = formData[fieldName];
-        const error = validateField(value, rules, fieldName, formData);
+        const error = validateField(value, rules, fieldName);
 
         if (error) {
             errors.push({
@@ -204,18 +202,17 @@ export function validateForm(
 export function useFieldValidation(
     value: any,
     rules: ValidationRule,
-    fieldName: string = 'Field',
-    formData?: any
+    fieldName: string = 'Field'
 ) {
     const [error, setError] = React.useState<string | undefined>();
     const [touched, setTouched] = React.useState(false);
 
     React.useEffect(() => {
         if (touched) {
-            const validationError = validateField(value, rules, fieldName, formData);
+            const validationError = validateField(value, rules, fieldName);
             setError(validationError);
         }
-    }, [value, rules, fieldName, formData, touched]);
+    }, [value, rules, fieldName, touched]);
 
     const markTouched = React.useCallback(() => {
         setTouched(true);

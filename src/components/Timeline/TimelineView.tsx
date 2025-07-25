@@ -1,22 +1,20 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
-import { Input } from '@/components/ui/input';
 import {
     CalendarDays,
+    Calendar as CalendarIcon,
     ChevronLeft,
     ChevronRight,
-    Filter,
     Search,
-    Clock,
-    Users,
     Target,
-    BarChart3,
-    Calendar as CalendarIcon
+    Users,
+    BarChart3
 } from 'lucide-react';
 import { Project, Assignment, Engineer } from '../../types';
 
@@ -37,7 +35,7 @@ interface TimelineEvent {
 }
 
 export function TimelineView() {
-    const { projects, assignments, engineers, currentUser } = useApp();
+    const { projects, assignments, engineers } = useApp();
     const [viewMode, setViewMode] = useState<ViewMode>('timeline');
     const [timeRange, setTimeRange] = useState<TimeRange>('month');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -238,10 +236,9 @@ export function TimelineView() {
                                             </Badge>
                                             {event.project && (
                                                 <p className="text-xs text-gray-600 font-medium">
-                                                    Priority: <span className={`font-semibold ${
-                                                        event.project.priority === 'high' ? 'text-red-600' :
+                                                    Priority: <span className={`font-semibold ${event.project.priority === 'high' ? 'text-red-600' :
                                                         event.project.priority === 'medium' ? 'text-yellow-600' : 'text-green-600'
-                                                    }`}>{event.project.priority}</span>
+                                                        }`}>{event.project.priority}</span>
                                                 </p>
                                             )}
                                         </div>
@@ -272,13 +269,14 @@ export function TimelineView() {
                             <Calendar
                                 mode="single"
                                 selected={selectedDate}
-                                onSelect={(date) => date && setSelectedDate(date)}
+                                onSelect={(date: Date | undefined) => date && setSelectedDate(date)}
                                 modifiers={{
                                     hasEvents: timelineEvents.map(e => e.startDate)
                                 }}
                                 modifiersStyles={{
-                                    hasEvents: { backgroundColor: '#dbeafe', fontWeight: 'bold' }
+                                    hasEvents: { backgroundColor: '#dbeafe', color: '#1e40af' }
                                 }}
+                                className="rounded-md border"
                             />
                         </CardContent>
                     </Card>

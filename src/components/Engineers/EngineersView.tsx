@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -158,13 +158,12 @@ export function EngineersView() {
                         {utilizationStatus.status}
                       </span>
                     </div>
-                    <Progress 
-                      value={utilizationPercentage} 
-                      className={`h-2 ${
-                        utilizationPercentage > 100 ? 'bg-red-200 [&>div]:bg-red-500' :
-                        utilizationPercentage >= 70 ? 'bg-green-200 [&>div]:bg-green-500' :
-                        'bg-yellow-200 [&>div]:bg-yellow-500'
-                      }`}
+                    <Progress
+                      value={utilizationPercentage}
+                      className={`h-2 ${utilizationPercentage > 100 ? 'bg-red-200 [&>div]:bg-red-500' :
+                          utilizationPercentage >= 70 ? 'bg-green-200 [&>div]:bg-green-500' :
+                            'bg-yellow-200 [&>div]:bg-yellow-500'
+                        }`}
                     />
                     <p className="text-xs text-gray-600 mt-2 font-medium">
                       {workload}% allocated of {engineer.capacity}% capacity

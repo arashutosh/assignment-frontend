@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { X, Plus, Save, AlertCircle } from 'lucide-react';
-import { Engineer } from '../../types';
 import { useToast } from '@/hooks/use-toast';
 
 const commonSkills = [
@@ -20,11 +19,11 @@ const commonSkills = [
 ];
 
 interface FormData {
-  name: string;
-  email: string;
-  skills: string[];
-  seniorityLevel: 'junior' | 'mid' | 'senior' | 'lead';
-  department?: string;
+    name: string;
+    email: string;
+    skills: string[];
+    seniorityLevel: 'junior' | 'mid' | 'senior' | 'lead';
+    department?: string;
 }
 
 export function EditProfileView() {
@@ -36,31 +35,31 @@ export function EditProfileView() {
 
     const currentEngineer = engineers.find(eng => eng.id === currentUser?.id);
 
-      const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors, isDirty }
-  } = useForm<FormData>({
-    defaultValues: {
-      name: currentEngineer?.name || '',
-      email: currentEngineer?.email || '',
-      skills: currentEngineer?.skills || [],
-      seniorityLevel: currentEngineer?.seniorityLevel || 'mid',
-      department: currentEngineer?.department || '',
-    }
-  });
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        reset,
+        formState: { errors, isDirty }
+    } = useForm<FormData>({
+        defaultValues: {
+            name: currentEngineer?.name || '',
+            email: currentEngineer?.email || '',
+            skills: currentEngineer?.skills || [],
+            seniorityLevel: currentEngineer?.seniorityLevel || 'mid',
+            department: currentEngineer?.department || '',
+        }
+    });
 
-      React.useEffect(() => {
-    if (currentEngineer) {
-      setSelectedSkills(currentEngineer.skills || []);
-      setValue('name', currentEngineer.name);
-      setValue('email', currentEngineer.email);
-      setValue('seniorityLevel', currentEngineer.seniorityLevel || 'mid');
-      setValue('department', currentEngineer.department || '');
-    }
-  }, [currentEngineer, setValue]);
+    React.useEffect(() => {
+        if (currentEngineer) {
+            setSelectedSkills(currentEngineer.skills || []);
+            setValue('name', currentEngineer.name);
+            setValue('email', currentEngineer.email);
+            setValue('seniorityLevel', currentEngineer.seniorityLevel || 'mid');
+            setValue('department', currentEngineer.department || '');
+        }
+    }, [currentEngineer, setValue]);
 
     React.useEffect(() => {
         setValue('skills', selectedSkills);
@@ -100,18 +99,18 @@ export function EditProfileView() {
         }
     };
 
-      const handleCancel = () => {
-    if (currentEngineer) {
-      reset({
-        name: currentEngineer.name,
-        email: currentEngineer.email,
-        seniorityLevel: currentEngineer.seniorityLevel || 'mid',
-        department: currentEngineer.department || '',
-      });
-      setSelectedSkills(currentEngineer.skills || []);
-    }
-    setIsEditing(false);
-  };
+    const handleCancel = () => {
+        if (currentEngineer) {
+            reset({
+                name: currentEngineer.name,
+                email: currentEngineer.email,
+                seniorityLevel: currentEngineer.seniorityLevel || 'mid',
+                department: currentEngineer.department || '',
+            });
+            setSelectedSkills(currentEngineer.skills || []);
+        }
+        setIsEditing(false);
+    };
 
     if (!currentEngineer) {
         return (
@@ -133,7 +132,7 @@ export function EditProfileView() {
                     <p className="text-gray-600 text-lg">Manage your professional information and skills</p>
                 </div>
                 {!isEditing && (
-                    <Button 
+                    <Button
                         onClick={() => setIsEditing(true)}
                         className="px-4 py-2 shadow-sm hover:shadow-md transition-shadow"
                     >
@@ -199,14 +198,14 @@ export function EditProfileView() {
                                     </Select>
                                 </div>
 
-                                                <div className="space-y-2">
-                  <Label htmlFor="department">Department</Label>
-                  <Input
-                    id="department"
-                    {...register('department')}
-                    placeholder="Engineering"
-                  />
-                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="department">Department</Label>
+                                    <Input
+                                        id="department"
+                                        {...register('department')}
+                                        placeholder="Engineering"
+                                    />
+                                </div>
                             </div>
 
                             <div className="space-y-2">
@@ -287,19 +286,19 @@ export function EditProfileView() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div>
-                  <h4 className="font-medium mb-2">Employment Details</h4>
-                  <div className="space-y-1 text-sm">
-                    <p><span className="font-medium">Type:</span> {currentEngineer.employmentType}</p>
-                    <p><span className="font-medium">Capacity:</span> {currentEngineer.capacity}%</p>
-                    {currentEngineer.department && (
-                      <p><span className="font-medium">Department:</span> {currentEngineer.department}</p>
-                    )}
-                    <p className="text-xs text-gray-500 mt-2">
-                      Employment type and capacity are managed by your manager
-                    </p>
-                  </div>
-                </div>
+                                <div>
+                                    <h4 className="font-medium mb-2">Employment Details</h4>
+                                    <div className="space-y-1 text-sm">
+                                        <p><span className="font-medium">Type:</span> {currentEngineer.employmentType}</p>
+                                        <p><span className="font-medium">Capacity:</span> {currentEngineer.capacity}%</p>
+                                        {currentEngineer.department && (
+                                            <p><span className="font-medium">Department:</span> {currentEngineer.department}</p>
+                                        )}
+                                        <p className="text-xs text-gray-500 mt-2">
+                                            Employment type and capacity are managed by your manager
+                                        </p>
+                                    </div>
+                                </div>
 
                                 <div>
                                     <h4 className="font-medium mb-2">Skills</h4>

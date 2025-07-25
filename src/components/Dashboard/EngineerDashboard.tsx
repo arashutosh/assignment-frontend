@@ -1,4 +1,3 @@
-import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -173,13 +172,13 @@ export function EngineerDashboard() {
                   if (!project) return null;
 
                   return (
-                                        <div key={assignment.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div key={assignment.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                       <div className="flex items-center justify-between mb-3">
                         <h4 className="font-semibold text-gray-800">{project.name}</h4>
-                        <Badge 
+                        <Badge
                           variant={
                             project.status === 'active' ? 'default' :
-                            project.status === 'completed' ? 'secondary' : 'outline'
+                              project.status === 'completed' ? 'secondary' : 'outline'
                           }
                           className="font-medium"
                         >
@@ -227,17 +226,16 @@ export function EngineerDashboard() {
                 <p className="text-gray-600">You're not currently assigned to any projects.</p>
               </div>
             ) : (
-                            myProjects.map((project) => (
+              myProjects.map((project) => (
                 <div key={project.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold text-gray-800 mb-2">{project.name}</h4>
                     <p className="text-sm text-gray-600 mb-3">{project.description}</p>
                     <div className="flex items-center space-x-4">
                       <span className="text-xs text-gray-600 font-medium">
-                        Priority: <span className={`font-semibold ${
-                          project.priority === 'high' ? 'text-red-600' :
-                          project.priority === 'medium' ? 'text-yellow-600' : 'text-green-600'
-                        }`}>{project.priority}</span>
+                        Priority: <span className={`font-semibold ${project.priority === 'high' ? 'text-red-600' :
+                            project.priority === 'medium' ? 'text-yellow-600' : 'text-green-600'
+                          }`}>{project.priority}</span>
                       </span>
                       <span className="text-xs text-gray-600 font-medium">
                         Team Size: <span className="font-semibold text-blue-600">{project.requiredTeamSize}</span>
@@ -245,10 +243,10 @@ export function EngineerDashboard() {
                     </div>
                   </div>
                   <div className="text-right ml-4 flex-shrink-0">
-                    <Badge 
+                    <Badge
                       variant={
                         project.status === 'active' ? 'default' :
-                        project.status === 'completed' ? 'secondary' : 'outline'
+                          project.status === 'completed' ? 'secondary' : 'outline'
                       }
                       className="font-medium mb-2"
                     >

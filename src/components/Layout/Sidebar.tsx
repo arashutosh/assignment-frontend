@@ -7,7 +7,6 @@ import {
   FolderOpen,
   Calendar,
   BarChart3,
-  Settings,
   User,
   CalendarDays
 } from 'lucide-react';

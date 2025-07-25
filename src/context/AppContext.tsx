@@ -16,6 +16,7 @@ interface AppContextType extends AppState {
   getEngineerWorkload: (engineerId: string) => number;
   getProjectAssignments: (projectId: string) => Assignment[];
   token: string | null;
+  dispatch?: React.Dispatch<Action>; // Added dispatch function
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -106,14 +107,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const fetchAllData = async (token: string) => {
     try {
       const [engineersRes, projectsRes, assignmentsRes] = await Promise.all([
-        errorHandler.fetchWithErrorHandling(`${API_BASE}/engineers`, { 
-          headers: { Authorization: `Bearer ${token}` } 
+        errorHandler.fetchWithErrorHandling(`${API_BASE}/engineers`, {
+          headers: { Authorization: `Bearer ${token}` }
         }, { context: 'AppContext.fetchAllData', showToast: false }),
-        errorHandler.fetchWithErrorHandling(`${API_BASE}/projects`, { 
-          headers: { Authorization: `Bearer ${token}` } 
+        errorHandler.fetchWithErrorHandling(`${API_BASE}/projects`, {
+          headers: { Authorization: `Bearer ${token}` }
         }, { context: 'AppContext.fetchAllData', showToast: false }),
-        errorHandler.fetchWithErrorHandling(`${API_BASE}/assignments`, { 
-          headers: { Authorization: `Bearer ${token}` } 
+        errorHandler.fetchWithErrorHandling(`${API_BASE}/assignments`, {
+          headers: { Authorization: `Bearer ${token}` }
         }, { context: 'AppContext.fetchAllData', showToast: false }),
       ]);
 
@@ -122,16 +123,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         projectsRes.json(),
         assignmentsRes.json(),
       ]);
-      
+
       dispatch({ type: 'SET_ENGINEERS', payload: engineers });
       dispatch({ type: 'SET_PROJECTS', payload: projects });
       dispatch({ type: 'SET_ASSIGNMENTS', payload: assignments });
     } catch (error) {
-      handleError(error, { 
+      handleError(error, {
         context: 'AppContext.fetchAllData',
-        showToast: true 
+        showToast: true
       });
-      
+
       // If data fetching fails due to auth, logout the user
       if (error instanceof AuthenticationError) {
         localStorage.removeItem('token');
@@ -145,7 +146,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem('token');
     if (token) {
       dispatch({ type: 'SET_LOADING', payload: true });
-      
+
       errorHandler.fetchWithErrorHandling(`${API_BASE}/auth/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       }, { context: 'AppContext.sessionRestore', showToast: false })
@@ -155,7 +156,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           fetchAllData(token);
         })
         .catch((error) => {
-          handleError(error, { 
+          handleError(error, {
             context: 'AppContext.sessionRestore',
             showToast: false // Don't show toast for session restore failures
           });
@@ -178,7 +179,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       }, { context: 'AppContext.login' });
-      
+
       const { token, user } = await res.json();
       localStorage.setItem('token', token);
       dispatch({ type: 'LOGIN', payload: { user, token } });
@@ -186,7 +187,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       dispatch({ type: 'SET_LOADING', payload: false });
       return true;
     } catch (error) {
-      handleError(error, { 
+      handleError(error, {
         context: 'AppContext.login'
       });
       dispatch({ type: 'SET_LOADING', payload: false });
@@ -203,7 +204,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const addEngineer = async (engineerData: Omit<Engineer, 'id'>) => {
     const tempId = `temp-${Date.now()}`;
     const optimisticEngineer = { ...engineerData, id: tempId };
-    
+
     // Optimistic update
     dispatch({ type: 'ADD_ENGINEER', payload: optimisticEngineer });
     addOptimisticUpdate(
@@ -212,17 +213,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       optimisticEngineer,
       () => dispatch({ type: 'SET_ENGINEERS', payload: state.engineers.filter(e => e.id !== tempId) })
     );
-    
+
     // Emit real-time event
     emit('engineer:added', optimisticEngineer);
-    
+
     try {
-      const res = await fetch(`${API_BASE}/engineers`, {
+      const res = await errorHandler.fetchWithErrorHandling(`${API_BASE}/engineers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(engineerData),
-      });
-      
+      }, { context: 'AppContext.addEngineer' });
+
       if (res.ok) {
         const engineer = await res.json();
         confirmOptimisticUpdate(tempId);
@@ -242,9 +243,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const updateEngineer = async (id: string, engineerData: Partial<Engineer>) => {
     const currentEngineer = state.engineers.find(e => e.id === id);
     if (!currentEngineer) return;
-    
+
     const updateId = `update-${id}-${Date.now()}`;
-    
+
     // Optimistic update
     dispatch({ type: 'UPDATE_ENGINEER', payload: { id, engineer: engineerData } });
     addOptimisticUpdate(
@@ -253,17 +254,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       { id, data: engineerData },
       () => dispatch({ type: 'UPDATE_ENGINEER', payload: { id, engineer: currentEngineer } })
     );
-    
+
     // Emit real-time event
     emit('engineer:updated', { id, data: engineerData });
-    
+
     try {
       const res = await errorHandler.fetchWithErrorHandling(`${API_BASE}/engineers/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(engineerData),
       }, { context: 'AppContext.updateEngineer' });
-      
+
       const updated = await res.json();
       confirmOptimisticUpdate(updateId);
       dispatch({ type: 'UPDATE_ENGINEER', payload: { id, engineer: updated } });
@@ -278,13 +279,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const addProject = async (projectData: Omit<Project, 'id' | 'createdAt' | 'createdBy'>) => {
     const tempId = `temp-${Date.now()}`;
-    const optimisticProject = { 
-      ...projectData, 
+    const optimisticProject = {
+      ...projectData,
       id: tempId,
       createdAt: new Date().toISOString(),
       createdBy: state.currentUser?.id || ''
     };
-    
+
     // Optimistic update
     dispatch({ type: 'ADD_PROJECT', payload: optimisticProject });
     addOptimisticUpdate(
@@ -293,17 +294,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       optimisticProject,
       () => dispatch({ type: 'SET_PROJECTS', payload: state.projects.filter(p => p.id !== tempId) })
     );
-    
+
     // Emit real-time event
     emit('project:added', optimisticProject);
-    
+
     try {
       const res = await errorHandler.fetchWithErrorHandling(`${API_BASE}/projects`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(projectData),
       }, { context: 'AppContext.addProject' });
-      
+
       const project = await res.json();
       confirmOptimisticUpdate(tempId);
       dispatch({ type: 'UPDATE_PROJECT', payload: { id: tempId, project } });
@@ -323,7 +324,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(projectData),
       }, { context: 'AppContext.updateProject' });
-      
+
       const updated = await res.json();
       dispatch({ type: 'UPDATE_PROJECT', payload: { id, project: updated } });
     } catch (error) {
@@ -334,13 +335,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const addAssignment = async (assignmentData: Omit<Assignment, 'id' | 'createdAt' | 'createdBy'>) => {
     const tempId = `temp-${Date.now()}`;
-    const optimisticAssignment = { 
-      ...assignmentData, 
+    const optimisticAssignment = {
+      ...assignmentData,
       id: tempId,
       createdAt: new Date().toISOString(),
       createdBy: state.currentUser?.id || ''
     };
-    
+
     // Optimistic update
     dispatch({ type: 'ADD_ASSIGNMENT', payload: optimisticAssignment });
     addOptimisticUpdate(
@@ -349,17 +350,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       optimisticAssignment,
       () => dispatch({ type: 'REMOVE_ASSIGNMENT', payload: tempId })
     );
-    
+
     // Emit real-time event
     emit('assignment:added', optimisticAssignment);
-    
+
     try {
       const res = await errorHandler.fetchWithErrorHandling(`${API_BASE}/assignments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify(assignmentData),
       }, { context: 'AppContext.addAssignment' });
-      
+
       const assignment = await res.json();
       confirmOptimisticUpdate(tempId);
       dispatch({ type: 'REMOVE_ASSIGNMENT', payload: tempId });
@@ -376,9 +377,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const removeAssignment = async (id: string) => {
     const assignment = state.assignments.find(a => a.id === id);
     if (!assignment) return;
-    
+
     const removeId = `remove-${id}-${Date.now()}`;
-    
+
     // Optimistic update
     dispatch({ type: 'REMOVE_ASSIGNMENT', payload: id });
     addOptimisticUpdate(
@@ -387,16 +388,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       { id },
       () => dispatch({ type: 'ADD_ASSIGNMENT', payload: assignment })
     );
-    
+
     // Emit real-time event
     emit('assignment:removed', { id });
-    
+
     try {
-      const res = await errorHandler.fetchWithErrorHandling(`${API_BASE}/assignments/${id}`, {
+      await errorHandler.fetchWithErrorHandling(`${API_BASE}/assignments/${id}`, {
         method: 'DELETE',
-        headers: { ...getAuthHeaders() },
+        headers: getAuthHeaders(),
       }, { context: 'AppContext.removeAssignment' });
-      
+
       confirmOptimisticUpdate(removeId);
       emit('assignment:confirmed', { id, action: 'remove' });
     } catch (error) {
@@ -431,6 +432,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     getEngineerWorkload,
     getProjectAssignments,
     token: state.token,
+    dispatch, // Expose dispatch
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

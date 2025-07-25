@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,7 @@ import { Plus, Search, Filter, FolderOpen, Calendar, Users, Target } from 'lucid
 import { AddProjectDialog } from './AddProjectDialog';
 
 export function ProjectsView() {
-  const { projects, assignments, engineers, currentUser, getProjectAssignments } = useApp();
+  const { projects, engineers, currentUser, getProjectAssignments } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -17,11 +17,11 @@ export function ProjectsView() {
   // Filter projects based on search term and status
   const filteredProjects = projects.filter(project => {
     const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         project.requiredSkills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
-    
+      project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      project.requiredSkills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
+
     const matchesStatus = !statusFilter || project.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -46,20 +46,20 @@ export function ProjectsView() {
   const getProjectProgress = (projectId: string) => {
     const projectAssignments = getProjectAssignments(projectId);
     const project = projects.find(p => p.id === projectId);
-    
+
     if (!project || projectAssignments.length === 0) return 0;
-    
+
     // Simple progress calculation based on time elapsed
     const startDate = new Date(project.startDate);
     const endDate = new Date(project.endDate);
     const currentDate = new Date();
-    
+
     if (currentDate < startDate) return 0;
     if (currentDate > endDate) return 100;
-    
+
     const totalDuration = endDate.getTime() - startDate.getTime();
     const elapsed = currentDate.getTime() - startDate.getTime();
-    
+
     return Math.min(100, (elapsed / totalDuration) * 100);
   };
 
@@ -71,7 +71,7 @@ export function ProjectsView() {
           <p className="text-gray-600 text-lg">Manage your engineering projects</p>
         </div>
         {currentUser?.role === 'manager' && (
-          <Button 
+          <Button
             onClick={() => setShowAddDialog(true)}
             className="px-4 py-2 shadow-sm hover:shadow-md transition-shadow"
           >
@@ -113,11 +113,11 @@ export function ProjectsView() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {filteredProjects.map((project) => {
           const projectAssignments = getProjectAssignments(project.id);
-          const assignedEngineers = projectAssignments.map(assignment => 
+          const assignedEngineers = projectAssignments.map(assignment =>
             engineers.find(eng => eng.id === assignment.engineerId)
           ).filter(Boolean);
           const progress = getProjectProgress(project.id);
-          
+
           return (
             <Card key={project.id} className="shadow-md hover:shadow-lg transition-shadow duration-200 bg-white border-0">
               <CardHeader className="pb-4">
@@ -138,7 +138,7 @@ export function ProjectsView() {
                   </div>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="space-y-5 pt-0">
                 {/* Project Timeline */}
                 <div className="flex items-center justify-between text-sm bg-gray-50 p-3 rounded-lg">
@@ -209,15 +209,14 @@ export function ProjectsView() {
                 {/* Project Dates */}
                 <div className="flex items-center justify-between text-xs font-medium pt-3 border-t border-gray-200">
                   <span className="text-gray-600">Created {new Date(project.createdAt).toLocaleDateString()}</span>
-                  <span className={`${
-                    project.status === 'active' ? 'text-blue-600' :
+                  <span className={`${project.status === 'active' ? 'text-blue-600' :
                     project.status === 'completed' ? 'text-green-600' : 'text-yellow-600'
-                  }`}>
-                    {project.status === 'active' 
+                    }`}>
+                    {project.status === 'active'
                       ? `${Math.ceil((new Date(project.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left`
-                      : project.status === 'completed' 
-                      ? 'Completed' 
-                      : 'Planning phase'
+                      : project.status === 'completed'
+                        ? 'Completed'
+                        : 'Planning phase'
                     }
                   </span>
                 </div>
@@ -232,14 +231,14 @@ export function ProjectsView() {
           <FolderOpen className="h-16 w-16 text-gray-400 mx-auto mb-6" />
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No Projects Found</h3>
           <p className="text-gray-600 text-lg mb-6">
-            {searchTerm || statusFilter 
-              ? 'No projects match your search criteria.' 
+            {searchTerm || statusFilter
+              ? 'No projects match your search criteria.'
               : 'No projects have been created yet.'
             }
           </p>
           {currentUser?.role === 'manager' && !searchTerm && !statusFilter && (
-            <Button 
-              className="px-6 py-3 shadow-sm hover:shadow-md transition-shadow" 
+            <Button
+              className="px-6 py-3 shadow-sm hover:shadow-md transition-shadow"
               onClick={() => setShowAddDialog(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -250,8 +249,8 @@ export function ProjectsView() {
       )}
 
       {currentUser?.role === 'manager' && (
-        <AddProjectDialog 
-          open={showAddDialog} 
+        <AddProjectDialog
+          open={showAddDialog}
           onOpenChange={setShowAddDialog}
         />
       )}

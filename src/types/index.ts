@@ -17,6 +17,7 @@ export interface Engineer {
   currentAllocation: number; // percentage currently allocated
   avatar?: string;
   joinDate: string;
+  department?: string; // Added missing department property
 }
 
 export interface Project {

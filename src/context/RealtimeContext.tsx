@@ -28,8 +28,7 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
         getPendingUpdates,
         isOnline,
         lastSyncTime,
-        pendingCount,
-        startAutoSync
+        pendingCount
     } = useRealtimeSync({
         syncInterval: 30000, // 30 seconds
         enableBroadcast: true
@@ -59,7 +58,7 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     // Auto-emit events for debugging in development
     useEffect(() => {
         if (process.env.NODE_ENV === 'development') {
-            const unsubscribe = subscribe('*', (event) => {
+            const unsubscribe = subscribe('*', (event: RealtimeEvent) => {
                 console.log('🔄 Realtime Event:', event);
             });
             return unsubscribe;
@@ -67,8 +66,9 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
     }, [subscribe]);
 
     const value: RealtimeContextType = {
-        emit,
+        isSyncing,
         subscribe,
+        emit,
         addOptimisticUpdate,
         confirmOptimisticUpdate,
         revertOptimisticUpdate,
@@ -76,7 +76,6 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
         isOnline,
         lastSyncTime,
         pendingCount,
-        isSyncing
     };
 
     return (
@@ -109,7 +108,7 @@ export function useOptimisticState<T>(
     type: string
 ): [T, (newValue: T, revertFn?: () => void) => void] {
     const [value, setValue] = useState<T>(initialValue);
-    const { addOptimisticUpdate, confirmOptimisticUpdate } = useRealtime();
+    const { addOptimisticUpdate } = useRealtime();
 
     const updateValue = (newValue: T, revertFn?: () => void) => {
         const previousValue = value;

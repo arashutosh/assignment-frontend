@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge } from './badge';
-import { Loader2, Wifi, WifiOff, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, WifiOff, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface SyncStatusProps {

@@ -70,7 +70,7 @@ export function AssignmentsView() {
   const assignmentData = assignments.map(assignment => {
     // Handle both populated objects and IDs
     let engineer, project;
-    
+
     if (typeof assignment.engineerId === 'object' && assignment.engineerId !== null) {
       // Backend returned populated engineer object (only name and email are populated)
       // We need to find the full engineer data from the engineers array
@@ -90,7 +90,7 @@ export function AssignmentsView() {
       // Backend returned engineer ID, look it up
       engineer = engineers.find(eng => eng.id === assignment.engineerId);
     }
-    
+
     if (typeof assignment.projectId === 'object' && assignment.projectId !== null) {
       // Backend returned populated project object (only name is populated)
       // We need to find the full project data from the projects array
@@ -112,9 +112,9 @@ export function AssignmentsView() {
       // Backend returned project ID, look it up
       project = projects.find(proj => proj.id === assignment.projectId);
     }
-    
+
     const isPending = Boolean(pendingOperations.has(assignment.id) || (assignment.id && assignment.id.startsWith('temp-')));
-    
+
     return { assignment, engineer, project, isPending };
   });
 
@@ -157,7 +157,7 @@ export function AssignmentsView() {
             </div>
           )}
         </div>
-        <Button 
+        <Button
           onClick={() => setShowAddDialog(true)}
           className="px-4 py-2 shadow-sm hover:shadow-md transition-shadow"
         >
@@ -192,7 +192,7 @@ export function AssignmentsView() {
                       <div className="flex items-center space-x-4">
                         <Avatar>
                           <AvatarFallback>
-                            {engineer!.name.split(' ').map(n => n[0]).join('')}
+                            {engineer!.name.split(' ').map((n: string) => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div>

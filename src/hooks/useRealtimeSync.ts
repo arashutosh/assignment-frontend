@@ -24,7 +24,6 @@ interface UseRealtimeSyncOptions {
 export function useRealtimeSync(options: UseRealtimeSyncOptions = {}) {
     const {
         syncInterval = 30000, // 30 seconds
-        maxRetries = 3,
         enableBroadcast = true
     } = options;
 

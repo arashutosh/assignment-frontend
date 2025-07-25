@@ -1,17 +1,15 @@
-import React from 'react';
 import { useApp } from '../../context/AppContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  FolderOpen, 
+import {
+  Users,
+  FolderOpen,
   AlertTriangle,
   CheckCircle,
   Clock,
-  Target
+  BarChart3,
+  TrendingUp
 } from 'lucide-react';
 
 export function AnalyticsView() {
@@ -146,7 +144,7 @@ export function AnalyticsView() {
                 </div>
                 <Badge variant="secondary">{wellUtilized.length}</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <Clock className="h-5 w-5 text-amber-600" />
@@ -154,7 +152,7 @@ export function AnalyticsView() {
                 </div>
                 <Badge variant="secondary">{underutilized.length}</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -169,16 +167,16 @@ export function AnalyticsView() {
             {/* Visual breakdown */}
             <div className="mt-6">
               <div className="flex rounded-lg overflow-hidden h-4">
-                <div 
-                  className="bg-green-500" 
+                <div
+                  className="bg-green-500"
                   style={{ width: `${(wellUtilized.length / engineers.length) * 100}%` }}
                 />
-                <div 
-                  className="bg-amber-500" 
+                <div
+                  className="bg-amber-500"
                   style={{ width: `${(underutilized.length / engineers.length) * 100}%` }}
                 />
-                <div 
-                  className="bg-red-500" 
+                <div
+                  className="bg-red-500"
                   style={{ width: `${(overloaded.length / engineers.length) * 100}%` }}
                 />
               </div>
@@ -205,7 +203,7 @@ export function AnalyticsView() {
                 </div>
                 <Badge variant="default">{activeProjects.length}</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="h-3 w-3 bg-gray-400 rounded-full" />
@@ -213,7 +211,7 @@ export function AnalyticsView() {
                 </div>
                 <Badge variant="outline">{planningProjects.length}</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="h-3 w-3 bg-green-500 rounded-full" />
@@ -226,16 +224,16 @@ export function AnalyticsView() {
             {/* Visual breakdown */}
             <div className="mt-6">
               <div className="flex rounded-lg overflow-hidden h-4">
-                <div 
-                  className="bg-blue-500" 
+                <div
+                  className="bg-blue-500"
                   style={{ width: `${(activeProjects.length / projects.length) * 100}%` }}
                 />
-                <div 
-                  className="bg-gray-400" 
+                <div
+                  className="bg-gray-400"
                   style={{ width: `${(planningProjects.length / projects.length) * 100}%` }}
                 />
-                <div 
-                  className="bg-green-500" 
+                <div
+                  className="bg-green-500"
                   style={{ width: `${(completedProjects.length / projects.length) * 100}%` }}
                 />
               </div>
@@ -263,8 +261,8 @@ export function AnalyticsView() {
                   <span className="font-medium">{skill}</span>
                   <div className="flex items-center space-x-2">
                     <div className="w-24 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className="bg-blue-600 h-2 rounded-full" 
+                      <div
+                        className="bg-blue-600 h-2 rounded-full"
                         style={{ width: `${(count / engineers.length) * 100}%` }}
                       />
                     </div>
@@ -290,8 +288,8 @@ export function AnalyticsView() {
                     <span className="font-medium capitalize">{level}</span>
                     <div className="flex items-center space-x-2">
                       <div className="w-24 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-purple-600 h-2 rounded-full" 
+                        <div
+                          className="bg-purple-600 h-2 rounded-full"
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
@@ -316,11 +314,11 @@ export function AnalyticsView() {
             {engineers.map((engineer) => {
               const workload = getEngineerWorkload(engineer.id);
               const percentage = (workload / engineer.capacity) * 100;
-              const status = 
+              const status =
                 percentage > 100 ? { label: 'Overloaded', color: 'text-red-600' } :
-                percentage < 70 ? { label: 'Underutilized', color: 'text-amber-600' } :
-                { label: 'Well Utilized', color: 'text-green-600' };
-              
+                  percentage < 70 ? { label: 'Underutilized', color: 'text-amber-600' } :
+                    { label: 'Well Utilized', color: 'text-green-600' };
+
               return (
                 <div key={engineer.id} className="flex items-center justify-between p-4 border rounded-lg">
                   <div className="flex items-center space-x-4">
@@ -340,7 +338,7 @@ export function AnalyticsView() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4">
                     <div className="text-right">
                       <div className="text-lg font-bold">{percentage.toFixed(0)}%</div>

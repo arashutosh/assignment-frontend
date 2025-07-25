@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useRealtime, useRealtimeEvent } from '../../context/RealtimeContext';
 import { useBackgroundSync } from '../../context/BackgroundSyncContext';
@@ -52,9 +52,9 @@ export function ManagerDashboard() {
   // Listen for external changes (from other users)
   useRealtimeEvent('external:changes-detected', (event) => {
     const changes = event.payload;
-    const totalChanges = Object.values(changes.added).reduce((a, b) => a + b, 0) +
-      Object.values(changes.removed).reduce((a, b) => a + b, 0) +
-      Object.values(changes.updated).reduce((a, b) => a + b, 0);
+    const totalChanges = Object.values(changes.added).reduce((a: number, b: unknown) => a + (b as number), 0) +
+      Object.values(changes.removed).reduce((a: number, b: unknown) => a + (b as number), 0) +
+      Object.values(changes.updated).reduce((a: number, b: unknown) => a + (b as number), 0);
 
     if (totalChanges > 0) {
       const notification = {
