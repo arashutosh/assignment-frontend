@@ -21,7 +21,7 @@ export function BackgroundSyncProvider({ children }: { children: React.ReactNode
         assignments: any[];
     } | null>(null);
 
-    const API_BASE = 'http://localhost:5001/api';
+    const API_BASE = 'https://assignment-backend-8gdp.onrender.com/api';
 
     // Get auth headers helper
     const getAuthHeaders = (): HeadersInit => {

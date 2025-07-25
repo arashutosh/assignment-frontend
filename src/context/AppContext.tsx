@@ -88,7 +88,7 @@ function appReducer(state: typeof initialState, action: Action): typeof initialS
   }
 }
 
-const API_BASE = 'http://localhost:5001/api';
+const API_BASE = 'https://assignment-backend-8gdp.onrender.com/api';
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
